@@ -17,13 +17,13 @@ MainWindow::MainWindow(QWidget *parent)
     cut = new cutimage();
 
     connect(camera,&CameraConnection::FrameReady,this,&MainWindow::Paint);
-    connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);
+    connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);    
     thread_cam = new QThread();
     thread_cut = new QThread();
     cut->moveToThread(thread_cut);
     camera->moveToThread(thread_cam);    
     connect(thread_cam, &QThread::started,camera, &CameraConnection::Grab);
-    connect(thread_cut, &QThread::started, this, &MainWindow::on_pushButton_clicked);
+    connect(thread_cut, &QThread::started, camera, &CameraConnection::Grab);
     thread_cam->start();
 }
 
@@ -39,8 +39,7 @@ void MainWindow::Paint(cv::Mat src)
     QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_Grayscale8);
     ui->label->setPixmap(QPixmap::fromImage(*CamImg).scaled(ui->label->size()));
     ui->label->update();
-    emit getFrame();
-    emit sendImage(src);
+    emit getFrame();    
     delete CamImg;
 }
 
@@ -69,10 +68,10 @@ void MainWindow::on_pushButton_clicked()
     }
     else
     {
-        cut->setTemplate(path);
-        connect(this, &MainWindow::sendImage, cut, &cutimage::templateWork);
-        thread_cam->start();
+        cut->setTemplate(path);        
+        connect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
         connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
+        thread_cam->start();        
         thread_cut->start();
     }
 }
@@ -86,3 +85,8 @@ void MainWindow::on_pushButton_2_clicked()
 }
 
 
+
+void MainWindow::on_slider_valueChanged(int value)
+{
+    cut->setThreshold((double)value);
+}

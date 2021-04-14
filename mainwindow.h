@@ -43,6 +43,8 @@ private slots:
 
     void on_loadTemplate_clicked();
 
+    void on_slider_valueChanged(int value);
+
 private:
     cv::Mat templ;//шаблонное изображение
 };

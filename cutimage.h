@@ -8,23 +8,28 @@ class cutimage : public QObject
 
 public:
 
-    cv::Mat source;
     cv::Mat templ;//шаблонное изображение
     cv::Mat mask;//рамка
     cv::Mat result;//результат выполнения функции match template
     int matchMethod = 2;//метод сопоставления шаблона
-    double threshold;
     bool useMask;
+    double threshold;
+
+
     cutimage();
-    void setTemplate(QString path){
-        templ = cv::imread(path.toStdString(), cv::IMREAD_GRAYSCALE);
-    }
-    void setThreashold(double value){
+
+    void setThreshold(double value){
         threshold = value;
     }
 
+    void setTemplate(QString path){
+        templ = cv::imread(path.toStdString(), cv::IMREAD_GRAYSCALE);
+    }
+    //void templateWork();
+
 public slots:
-    void templateWork(cv::Mat);    
+    void templateWork(cv::Mat);
+
 signals:
     void imageChanged(cv::Mat);
 };
