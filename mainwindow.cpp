@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "QFileDialog"
+#include "QFile"
+#include "QDataStream"
 #include "QMessageBox"
 
 //https://docs.opencv.org/3.4/de/da9/tutorial_template_matching.html - здесь все что нужно про match template
@@ -15,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     camera=new CameraConnection();
     cut = new cutimage();
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    path = settings.value("path").toString();
 
     connect(camera,&CameraConnection::FrameReady,this,&MainWindow::Paint);
     connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);    
@@ -33,6 +37,8 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
 
 void MainWindow::Paint(cv::Mat src)
 {
@@ -54,11 +60,15 @@ delete CamImg;
 void MainWindow::on_loadTemplate_clicked()
 {
     path = QFileDialog::getOpenFileName(this, QString::fromUtf8("Открыть файл"), QDir::currentPath(),"Images (*.png *.xpm *.bmp);;All files (*.*)");
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    settings.setValue("path", path);
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    if(path == "")
+    //check if path exists and if yes: Is it a file and no directory?
+    bool fileExists = QFileInfo::exists(path) && QFileInfo(path).isFile();
+    if(path == "" || fileExists == false)
     {
         QMessageBox box;
         box.setWindowTitle("Ошибка");

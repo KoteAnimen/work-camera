@@ -6,6 +6,7 @@
 #include "cutimage.h"
 #include <QThread>
 #include <QDebug>
+#include "QSettings"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,13 +20,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     cutimage *cut;
-    QString path;
+
 
 private:
     Ui::MainWindow *ui;
     CameraConnection *camera;
     QThread *thread_cam;
     QThread *thread_cut;
+    QString path;
+
 
 
 public slots:
