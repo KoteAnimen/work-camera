@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    cutimage *cut;
+    cutimage *cut = NULL;
 
 
 private:

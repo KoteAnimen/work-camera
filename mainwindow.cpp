@@ -16,18 +16,18 @@ MainWindow::MainWindow(QWidget *parent)
     int meta_type_id = qRegisterMetaType<cv::Mat>("cv::Mat");
 
     camera=new CameraConnection();
-    cut = new cutimage();
+
     QSettings settings("settings.ini", QSettings::IniFormat);
     path = settings.value("path").toString();
 
     connect(camera,&CameraConnection::FrameReady,this,&MainWindow::Paint);
     connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);
     thread_cam = new QThread();
-    thread_cut = new QThread();
-    cut->moveToThread(thread_cut);
-    camera->moveToThread(thread_cam);    
-    connect(thread_cam, &QThread::started,camera, &CameraConnection::Grab);
-    connect(thread_cut, &QThread::started, camera, &CameraConnection::Grab);
+
+    camera->moveToThread(thread_cam);
+
+    connect(thread_cam, &QThread::started, camera, &CameraConnection::Grab);
+
     thread_cam->start();
 }
 
@@ -51,10 +51,10 @@ void MainWindow::Paint(cv::Mat src)
 
 void MainWindow::DrawFrame(cv::Mat src)
 {
-QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_RGB32);
-ui->label_2->setPixmap(QPixmap::fromImage(*CamImg).scaled(ui->label_2->size()));
-ui->label_2->update();
-delete CamImg;
+    QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_RGB32);
+    ui->label_2->setPixmap(QPixmap::fromImage(*CamImg).scaled(ui->label_2->size()));
+    ui->label_2->update();
+    delete CamImg;
 }
 
 void MainWindow::on_loadTemplate_clicked()
@@ -66,6 +66,14 @@ void MainWindow::on_loadTemplate_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
+    if(cut == NULL)
+    {
+        cut = new cutimage();
+        thread_cut = new QThread();
+        cut->moveToThread(thread_cut);
+        connect(thread_cut, &QThread::started, camera, &CameraConnection::Grab);
+
+    }
     //check if path exists and if yes: Is it a file and no directory?
     bool fileExists = QFileInfo::exists(path) && QFileInfo(path).isFile();
     if(path == "" || fileExists == false)
@@ -78,20 +86,26 @@ void MainWindow::on_pushButton_clicked()
     }
     else
     {
-        cut->setTemplate(path);        
+        cut->setTemplate(path);
+        cut->setWork(true);
         connect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
-        connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
-        thread_cam->start();
+        connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);        
         thread_cut->start();
     }
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    thread_cam->quit();
-    thread_cut->quit();
-    disconnect(this, &MainWindow::sendImage, cut, &cutimage::templateWork);
-    disconnect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
+    if(cut != NULL)
+    {
+        disconnect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
+        disconnect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
+        cut->setWork(false);
+        connect(cut, &cutimage::finished, thread_cut, &QThread::deleteLater);
+        delete cut;
+        cut = NULL;
+    }
+    //ui->label_2->clear();// как по мне то это не удобно
 }
 
 

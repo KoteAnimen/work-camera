@@ -12,6 +12,7 @@ public:
     cv::Mat mask;//рамка
     cv::Mat result;//результат выполнения функции match template
     int matchMethod = 2;//метод сопоставления шаблона
+    bool isWork;
     bool useMask;
     double threshold;
 
@@ -25,6 +26,9 @@ public:
     void setTemplate(QString path){
         templ = cv::imread(path.toStdString(), cv::IMREAD_GRAYSCALE);
     }
+    void setWork(bool work){
+        isWork = work;
+    }
     //void templateWork();
 
 public slots:
@@ -32,6 +36,7 @@ public slots:
 
 signals:
     void imageChanged(cv::Mat);
+    void finished();
 };
 
 #endif // CUTIMAGE_H
