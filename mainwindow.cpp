@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     path = settings.value("path").toString();
 
     connect(camera,&CameraConnection::FrameReady,this,&MainWindow::Paint);
-    connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);    
+    connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);
     thread_cam = new QThread();
     thread_cut = new QThread();
     cut->moveToThread(thread_cut);
@@ -51,7 +51,7 @@ void MainWindow::Paint(cv::Mat src)
 
 void MainWindow::DrawFrame(cv::Mat src)
 {
-QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_Grayscale8);
+QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_RGB32);
 ui->label_2->setPixmap(QPixmap::fromImage(*CamImg).scaled(ui->label_2->size()));
 ui->label_2->update();
 delete CamImg;
@@ -81,7 +81,7 @@ void MainWindow::on_pushButton_clicked()
         cut->setTemplate(path);        
         connect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
         connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
-        thread_cam->start();        
+        thread_cam->start();
         thread_cut->start();
     }
 }

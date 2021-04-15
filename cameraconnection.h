@@ -45,7 +45,7 @@ public:
 private:
     //CBaslerGigECamera *Camera;
     CBaslerUsbCamera *Camera;
-    int expos = 20000;                      // экспозиция
+    int expos = 2486;                      // экспозиция
     bool isAbort;                   // стоп граббить
     QString serialNum;
     bool request = 1;

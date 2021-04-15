@@ -36,10 +36,12 @@ void cutimage::templateWork(cv::Mat source){
     {
         matchLoc = maxLoc;
     }
+    cv::cvtColor(dst, dst, cv::COLOR_RGB2RGBA);
+    qDebug() << minVal;
 
     //если совпадение будет максимально хорошим, то рисуем прямоугольник
-    if(minVal < threshold * pow(10, 6)){
-        rectangle( dst, matchLoc, cv::Point( matchLoc.x + templ.cols , matchLoc.y + templ.rows ), cv::Scalar(0, 0, 0), 3, 8, 0 );
+    if(minVal < threshold * pow(10, 8)){
+        rectangle( dst, matchLoc, cv::Point( matchLoc.x + templ.cols , matchLoc.y + templ.rows ), cv::Scalar(0, 255, 0), 3, 8, 0 );
     }
     emit imageChanged(dst);
 }
