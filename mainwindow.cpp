@@ -88,6 +88,7 @@ void MainWindow::on_pushButton_clicked()
     {
         cut->setTemplate(path);
         cut->setWork(true);
+        cut->setThreshold((double)ui->slider->value());
         connect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
         connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);        
         thread_cut->start();
@@ -112,5 +113,8 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_slider_valueChanged(int value)
 {
-    cut->setThreshold((double)value);
+    if(cut != NULL)
+    {
+        cut->setThreshold((double)value);
+    }
 }
