@@ -14,20 +14,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     int meta_type_id = qRegisterMetaType<cv::Mat>("cv::Mat");
-
     camera=new CameraConnection();
-
     QSettings settings("settings.ini", QSettings::IniFormat);
     path = settings.value("path").toString();
-
     connect(camera,&CameraConnection::FrameReady,this,&MainWindow::Paint);
     connect(this,&MainWindow::getFrame,camera,&CameraConnection::Grab);
     thread_cam = new QThread();
-
     camera->moveToThread(thread_cam);
-
     connect(thread_cam, &QThread::started, camera, &CameraConnection::Grab);
-
     thread_cam->start();
 }
 
@@ -86,12 +80,13 @@ void MainWindow::on_pushButton_clicked()
     }
     else
     {
+        QMainWindow::resize(620, 558);
         cut->setTemplate(path);
         cut->setWork(true);
         cut->setThreshold((double)ui->slider->value());
         connect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
         connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);        
-        thread_cut->start();
+        thread_cut->start();        
     }
 }
 
@@ -105,8 +100,11 @@ void MainWindow::on_pushButton_2_clicked()
         connect(cut, &cutimage::finished, thread_cut, &QThread::deleteLater);
         delete cut;
         cut = NULL;
+        ui->label_2->clear();// как по мне то это не удобно        
+        QMainWindow::resize(QMainWindow::minimumWidth(), QMainWindow::minimumHeight());
+        QMainWindow::updateGeometry();
     }
-    //ui->label_2->clear();// как по мне то это не удобно
+
 }
 
 
