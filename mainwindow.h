@@ -33,11 +33,11 @@ private:
 
 public slots:
     void Paint(cv::Mat);    
-    void DrawFrame(cv::Mat src);
+    //void DrawFrame(cv::Mat src);
+    void setCoordinates(double, double);
 
 signals:
-    void getFrame();
-    void sendImage(cv::Mat);
+    void getFrame();    
 
 private slots:
     void on_pushButton_clicked();

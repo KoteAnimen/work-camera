@@ -35,7 +35,8 @@ public slots:
     void templateWork(cv::Mat);
 
 signals:
-    void imageChanged(cv::Mat);
+    //void imageChanged(cv::Mat);
+    void coordinates(double, double);
     void finished();
 };
 
