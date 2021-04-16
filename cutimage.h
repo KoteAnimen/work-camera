@@ -28,15 +28,14 @@ public:
     }
     void setWork(bool work){
         isWork = work;
-    }
-    //void templateWork();
+    }    
 
 public slots:
     void templateWork(cv::Mat);
 
 signals:
-    //void imageChanged(cv::Mat);
-    void coordinates(double, double);
+    void imageChanged(cv::Mat);
+    //void coordinates(double, double);
     void finished();
 };
 

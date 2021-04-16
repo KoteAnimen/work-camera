@@ -33,8 +33,8 @@ private:
 
 public slots:
     void Paint(cv::Mat);    
-    //void DrawFrame(cv::Mat src);
-    void setCoordinates(double, double);
+    void DrawFrame(cv::Mat src);
+    //void setCoordinates(double, double);
 
 signals:
     void getFrame();    

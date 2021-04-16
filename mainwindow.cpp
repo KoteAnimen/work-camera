@@ -43,18 +43,18 @@ void MainWindow::Paint(cv::Mat src)
     delete CamImg;
 }
 
-//void MainWindow::DrawFrame(cv::Mat src)
-//{
-//    QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_RGB32);
-//    ui->label_2->setPixmap(QPixmap::fromImage(*CamImg).scaled(ui->label_2->size()));
-//    ui->label_2->update();
-//    delete CamImg;
-//}
-
-void MainWindow::setCoordinates(double x, double y)
+void MainWindow::DrawFrame(cv::Mat src)
 {
-    ui->label_2->setText("x: " + QString::number(x) + " " + "y: " + QString::number(y));
+    QImage *CamImg = new QImage(src.data, src.cols, src.rows, src.step,QImage::Format_RGB32);
+    ui->label_2->setPixmap(QPixmap::fromImage(*CamImg).scaled(ui->label_2->size()));
+    ui->label_2->update();
+    delete CamImg;
 }
+
+//void MainWindow::setCoordinates(double x, double y)
+//{
+//    ui->label_2->setText("x: " + QString::number(x) + " " + "y: " + QString::number(y));
+//}
 
 void MainWindow::on_loadTemplate_clicked()
 {
@@ -90,7 +90,8 @@ void MainWindow::on_pushButton_clicked()
         cut->setWork(true);
         cut->setThreshold((double)ui->slider->value());
         connect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
-        connect(cut, &cutimage::coordinates, this, &MainWindow::setCoordinates);
+        //connect(cut, &cutimage::coordinates, this, &MainWindow::setCoordinates);
+        connect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
         thread_cut->start();        
     }
 }
@@ -100,7 +101,8 @@ void MainWindow::on_pushButton_2_clicked()
     if(cut != NULL)
     {
         disconnect(camera, &CameraConnection::FrameReady, cut,&cutimage::templateWork);
-        disconnect(cut, &cutimage::coordinates, this, &MainWindow::setCoordinates);
+        disconnect(cut, &cutimage::imageChanged, this, &MainWindow::DrawFrame);
+        //disconnect(cut, &cutimage::coordinates, this, &MainWindow::setCoordinates);
         cut->setWork(false);
         connect(cut, &cutimage::finished, thread_cut, &QThread::deleteLater);
         delete cut;

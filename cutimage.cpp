@@ -43,10 +43,10 @@ void cutimage::templateWork(cv::Mat source){
 
         //если совпадение будет максимально хорошим, то рисуем прямоугольник
         if(minVal < threshold * pow(10, 8)){
-            emit coordinates(matchLoc.x, matchLoc.y);
-            //rectangle( dst, matchLoc, cv::Point( matchLoc.x + templ.cols , matchLoc.y + templ.rows ), cv::Scalar(0, 255, 0), 3, 8, 0 );
+            //emit coordinates(matchLoc.x, matchLoc.y);
+            rectangle( dst, matchLoc, cv::Point( matchLoc.x + templ.cols , matchLoc.y + templ.rows ), cv::Scalar(0, 255, 0), 3, 8, 0 );
         }
-        //emit imageChanged(dst);
+        emit imageChanged(dst);
 
     }
     else
